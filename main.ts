@@ -14,6 +14,12 @@ const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "out";
 
 const raw = readFileSync(join(botDir, "VIDEO.json"), "utf8");
 
+// The gate accepts a VIDEO.json of at most 16384 bytes; refuse anything
+// larger here so a bad file fails loudly instead of at grading.
+if (Buffer.byteLength(raw, "utf8") > 16384) {
+  throw new Error("VIDEO.json is larger than 16384 bytes");
+}
+
 // Validate: a JSON object whose url names one YouTube video in one of the
 // shapes the bounty accepts (shorts, watch, or youtu.be), with an 11-char id.
 const parsed: unknown = JSON.parse(raw);
